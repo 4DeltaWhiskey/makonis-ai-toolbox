@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface AuthContextType {
   session: Session | null;
@@ -24,24 +25,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    let mounted = true;
-
     // Get initial session
     const initializeAuth = async () => {
       try {
         const { data: { session: initialSession } } = await supabase.auth.getSession();
-        if (mounted) {
-          setSession(initialSession);
-          setUser(initialSession?.user ?? null);
-          if (initialSession?.user) {
-            checkAdminStatus(initialSession.user.id);
-          }
+        setSession(initialSession);
+        setUser(initialSession?.user ?? null);
+        
+        if (initialSession?.user) {
+          checkAdminStatus(initialSession.user.id);
         }
       } catch (error) {
         console.error("Error getting initial session:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -51,23 +53,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
       console.log("Auth state changed:", event, currentSession?.user?.email);
       
-      if (mounted) {
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
-        
-        if (currentSession?.user) {
-          checkAdminStatus(currentSession.user.id);
-        } else {
-          setIsAdmin(false);
-        }
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
+      
+      if (currentSession?.user) {
+        checkAdminStatus(currentSession.user.id);
+      } else {
+        setIsAdmin(false);
+        navigate('/auth');
       }
     });
 
     return () => {
-      mounted = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [navigate]);
 
   const checkAdminStatus = async (userId: string) => {
     try {
@@ -78,11 +78,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (error) {
         console.error("Failed to check admin status:", error);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to check admin status",
-        });
         return;
       }
       
@@ -97,13 +92,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
 
-      // Force clear the state
+      // Clear local state
       setSession(null);
       setUser(null);
       setIsAdmin(false);
       
-      // Reload the page to ensure clean state
-      window.location.reload();
+      // Navigate to auth page
+      navigate('/auth');
       
       toast({
         title: "Signed out successfully",
@@ -118,6 +113,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
     }
   };
+
+  if (isLoading) {
+    return null; // Or a loading spinner
+  }
 
   return (
     <AuthContext.Provider value={{ session, user, isAdmin, signOut }}>
