@@ -44,11 +44,15 @@ const Index = () => {
       return;
     }
 
-    setProjects(data.map(project => ({
-      ...project,
-      id: project.id.toString(),
+    setProjects(data?.map(project => ({
+      id: project.id,
+      title: project.title,
+      description: project.description,
+      website: project.website || undefined,
+      github: project.github || undefined,
+      thumbnailUrl: project.thumbnail_url,
       tags: project.tags || []
-    })));
+    })) || []);
   };
 
   const handleInputChange = (
