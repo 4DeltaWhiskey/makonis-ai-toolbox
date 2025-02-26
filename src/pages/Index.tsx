@@ -13,7 +13,10 @@ const Index = () => {
   const fetchProjects = async () => {
     const { data, error } = await supabase
       .from('projects')
-      .select('*')
+      .select(`
+        *,
+        owner:profiles(email)
+      `)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -33,7 +36,8 @@ const Index = () => {
       github: project.github || undefined,
       thumbnailUrl: project.thumbnail_url,
       tags: project.tags || [],
-      userId: project.user_id
+      userId: project.user_id,
+      owner: project.owner
     })) || []);
   };
 
