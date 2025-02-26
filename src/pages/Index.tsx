@@ -28,7 +28,9 @@ const Index = () => {
       return;
     }
 
-    setProjects(data?.map(project => ({
+    if (!data) return;
+
+    const formattedProjects: Project[] = data.map(project => ({
       id: project.id,
       title: project.title,
       description: project.description,
@@ -37,8 +39,12 @@ const Index = () => {
       thumbnailUrl: project.thumbnail_url,
       tags: project.tags || [],
       userId: project.user_id,
-      owner: project.owner
-    })) || []);
+      owner: project.owner ? {
+        email: project.owner.email
+      } : null
+    }));
+
+    setProjects(formattedProjects);
   };
 
   useEffect(() => {
