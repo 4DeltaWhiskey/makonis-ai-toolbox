@@ -14,8 +14,17 @@ const Index = () => {
     const { data, error } = await supabase
       .from('projects')
       .select(`
-        *,
-        profiles!projects_user_id_fkey(email)
+        id,
+        title,
+        description,
+        website,
+        github,
+        thumbnail_url,
+        tags,
+        user_id,
+        profiles (
+          email
+        )
       `)
       .order('created_at', { ascending: false });
 
