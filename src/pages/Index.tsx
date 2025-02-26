@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ProjectCard } from "@/components/ProjectCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,31 +7,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { PlusIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
 import type { Project } from "@/types/project";
-
-const sampleProjects: Project[] = [
-  {
-    id: "1",
-    title: "AI Image Generator",
-    description: "A deep learning model that generates unique images from text descriptions.",
-    website: "https://example.com",
-    github: "https://github.com/example/ai-image-gen",
-    thumbnailUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-    tags: ["AI", "Deep Learning", "Computer Vision"],
-  },
-  {
-    id: "2",
-    title: "Natural Language Processing API",
-    description: "REST API for text analysis, sentiment detection, and language translation.",
-    website: "https://example.com",
-    github: "https://github.com/example/nlp-api",
-    thumbnailUrl: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
-    tags: ["NLP", "API", "Machine Learning"],
-  },
-];
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
+  const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -40,6 +24,32 @@ const Index = () => {
     thumbnailUrl: "",
     tags: "",
   });
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to fetch projects",
+      });
+      return;
+    }
+
+    setProjects(data.map(project => ({
+      ...project,
+      id: project.id.toString(),
+      tags: project.tags || []
+    })));
+  };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -51,30 +61,59 @@ const Index = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Here we'll later add the actual submission logic
-    const newProject: Project = {
-      id: Date.now().toString(),
-      title: formData.title,
-      description: formData.description,
-      website: formData.website || undefined,
-      github: formData.github || undefined,
-      thumbnailUrl: formData.thumbnailUrl,
-      tags: formData.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
-    };
+    setIsLoading(true);
 
-    console.log("New project:", newProject);
-    setIsDialogOpen(false);
-    setFormData({
-      title: "",
-      description: "",
-      website: "",
-      github: "",
-      thumbnailUrl: "",
-      tags: "",
-    });
+    try {
+      // Generate thumbnail from website
+      const { data: thumbnailData, error: thumbnailError } = await supabase.functions
+        .invoke('generate-thumbnail', {
+          body: { website: formData.website }
+        });
+
+      if (thumbnailError) throw new Error(thumbnailError.message);
+
+      // Insert project into database
+      const { error: insertError } = await supabase
+        .from('projects')
+        .insert({
+          title: formData.title,
+          description: formData.description,
+          website: formData.website || null,
+          github: formData.github || null,
+          thumbnail_url: thumbnailData.thumbnailUrl,
+          tags: formData.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
+        });
+
+      if (insertError) throw new Error(insertError.message);
+
+      toast({
+        title: "Success",
+        description: "Project added successfully",
+      });
+
+      setIsDialogOpen(false);
+      setFormData({
+        title: "",
+        description: "",
+        website: "",
+        github: "",
+        thumbnailUrl: "",
+        tags: "",
+      });
+      
+      // Refresh projects list
+      await fetchProjects();
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -125,7 +164,7 @@ const Index = () => {
                   </div>
 
                   <div className="grid gap-2">
-                    <Label htmlFor="website">Website URL</Label>
+                    <Label htmlFor="website">Website URL *</Label>
                     <Input
                       id="website"
                       name="website"
@@ -133,6 +172,7 @@ const Index = () => {
                       value={formData.website}
                       onChange={handleInputChange}
                       placeholder="https://your-project.com"
+                      required
                     />
                   </div>
 
@@ -145,19 +185,6 @@ const Index = () => {
                       value={formData.github}
                       onChange={handleInputChange}
                       placeholder="https://github.com/username/repo"
-                    />
-                  </div>
-
-                  <div className="grid gap-2">
-                    <Label htmlFor="thumbnailUrl">Thumbnail URL *</Label>
-                    <Input
-                      id="thumbnailUrl"
-                      name="thumbnailUrl"
-                      type="url"
-                      value={formData.thumbnailUrl}
-                      onChange={handleInputChange}
-                      placeholder="https://example.com/image.jpg"
-                      required
                     />
                   </div>
 
@@ -177,7 +204,9 @@ const Index = () => {
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button type="submit">Submit Project</Button>
+                  <Button type="submit" disabled={isLoading}>
+                    {isLoading ? "Adding Project..." : "Submit Project"}
+                  </Button>
                 </DialogFooter>
               </form>
             </DialogContent>
@@ -185,7 +214,7 @@ const Index = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sampleProjects.map((project) => (
+          {projects.map((project) => (
             <div key={project.id} className="animate-slideUpAndFade">
               <ProjectCard project={project} />
             </div>
