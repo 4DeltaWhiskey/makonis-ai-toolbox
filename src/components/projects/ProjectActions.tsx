@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { GithubIcon, Globe, Edit, Video, X } from "lucide-react";
+import { GithubIcon, Edit, Video } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useState } from "react";
 
@@ -13,7 +13,6 @@ interface ProjectActionsProps {
 }
 
 export const ProjectActions = ({
-  website,
   github,
   videoUrl,
   canEdit,
@@ -24,17 +23,6 @@ export const ProjectActions = ({
   return (
     <>
       <div className="flex gap-2 flex-wrap">
-        {website && (
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={() => window.open(website, '_blank')}
-          >
-            <Globe className="h-4 w-4" />
-            Website
-          </Button>
-        )}
         {github && (
           <Button
             variant="outline"
