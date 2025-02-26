@@ -22,27 +22,6 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
   return (
     <Card className="project-card overflow-hidden bg-white relative">
       <div className="relative aspect-video overflow-hidden">
-        {canEdit && (
-          <div className="absolute top-2 right-2 flex gap-2 z-50">
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2 bg-white/90 backdrop-blur-sm hover:bg-white"
-            >
-              <Edit className="h-4 w-4" />
-              Edit
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2 bg-white/90 backdrop-blur-sm hover:bg-white text-destructive hover:text-destructive"
-              onClick={onDelete}
-            >
-              <Trash className="h-4 w-4" />
-              Delete
-            </Button>
-          </div>
-        )}
         <img
           src={project.thumbnailUrl}
           alt={project.title}
@@ -86,6 +65,27 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
               <GithubIcon className="h-4 w-4" />
               GitHub
             </Button>
+          )}
+          {canEdit && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+              >
+                <Edit className="h-4 w-4" />
+                Edit
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 text-destructive hover:text-destructive"
+                onClick={onDelete}
+              >
+                <Trash className="h-4 w-4" />
+                Delete
+              </Button>
+            </>
           )}
         </div>
       </CardFooter>
