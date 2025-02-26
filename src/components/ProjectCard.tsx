@@ -44,8 +44,8 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
 
   return (
     <>
-      <Card className="project-card overflow-hidden bg-white relative">
-        <div className="relative aspect-video overflow-hidden">
+      <Card className="project-card overflow-hidden bg-white relative h-[420px] w-full flex flex-col">
+        <div className="relative h-48 overflow-hidden">
           <img
             src={project.thumbnailUrl}
             alt={project.title}
@@ -53,7 +53,7 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
             loading="lazy"
           />
         </div>
-        <CardHeader className="space-y-2">
+        <CardHeader className="space-y-2 flex-none">
           <div className="flex flex-wrap gap-2">
             {project.tags.map((tag) => (
               <Badge key={tag} variant="secondary" className="text-xs">
@@ -61,12 +61,12 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
               </Badge>
             ))}
           </div>
-          <h3 className="font-semibold text-xl tracking-tight">{project.title}</h3>
+          <h3 className="font-semibold text-xl tracking-tight line-clamp-1">{project.title}</h3>
         </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground line-clamp-2">{project.description}</p>
+        <CardContent className="flex-1">
+          <p className="text-muted-foreground line-clamp-3 h-[72px]">{project.description}</p>
         </CardContent>
-        <CardFooter className="flex flex-row justify-between items-center p-6 pt-0">
+        <CardFooter className="flex flex-row justify-between items-center p-6 pt-0 flex-none">
           <ProjectActions
             website={project.website}
             github={project.github}
