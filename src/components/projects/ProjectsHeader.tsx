@@ -1,6 +1,7 @@
 
 import { AddProjectDialog } from "./AddProjectDialog";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 
