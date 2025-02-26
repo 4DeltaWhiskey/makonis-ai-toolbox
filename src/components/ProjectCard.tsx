@@ -40,7 +40,7 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
       <CardContent>
         <p className="text-muted-foreground line-clamp-2">{project.description}</p>
       </CardContent>
-      <CardFooter className="flex justify-between items-center gap-2 z-10">
+      <CardFooter className="flex justify-between items-center gap-2 z-20 bg-white relative">
         <div className="flex gap-2 flex-wrap flex-1">
           {project.website && (
             <Button
@@ -66,11 +66,11 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
           )}
         </div>
         {canEdit && (
-          <div className="flex gap-2 shrink-0">
+          <div className="flex gap-2 shrink-0 relative z-30">
             <Button
               variant="outline"
               size="sm"
-              className="gap-2"
+              className="gap-2 bg-white"
             >
               <Edit className="h-4 w-4" />
               Edit
@@ -78,7 +78,7 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
             <Button
               variant="outline"
               size="sm"
-              className="gap-2 text-destructive hover:text-destructive"
+              className="gap-2 text-destructive hover:text-destructive bg-white"
               onClick={onDelete}
             >
               <Trash className="h-4 w-4" />
