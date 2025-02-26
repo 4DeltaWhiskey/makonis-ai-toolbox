@@ -19,40 +19,23 @@ serve(async (req) => {
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    const urlboxApiKey = Deno.env.get('URLBOX_API_KEY') ?? ''
-    const urlboxApiSecret = Deno.env.get('URLBOX_API_SECRET') ?? ''
+    const screenshotMachineKey = Deno.env.get('SCREENSHOT_MACHINE_KEY') ?? ''
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
-    // Generate screenshot URL using URLbox
-    const format = 'png'
-    const options = {
+    // Generate screenshot URL using Screenshot Machine
+    const screenshotParams = new URLSearchParams({
+      key: screenshotMachineKey,
       url: website,
-      width: 1200,
-      height: 630,
-      format,
-      force: true,
-      full_page: false,
-      wait_for: 1000, // wait for 1s after page load
-    }
+      dimension: '1200x630',
+      format: 'png',
+      cacheLimit: '0',
+      delay: '2000'
+    })
 
-    const queryString = new URLSearchParams({
-      url: options.url,
-      width: options.width.toString(),
-      height: options.height.toString(),
-      format: options.format,
-      force: options.force.toString(),
-      full_page: options.full_page.toString(),
-      wait_for: options.wait_for.toString(),
-    }).toString()
-
-    const screenshotUrl = `https://api.urlbox.io/v1/${urlboxApiKey}/${btoa(queryString)}`
+    const screenshotUrl = `https://api.screenshotmachine.com?${screenshotParams}`
 
     // Download the screenshot
-    const imageResponse = await fetch(screenshotUrl, {
-      headers: {
-        'Authorization': `Bearer ${urlboxApiSecret}`
-      }
-    })
+    const imageResponse = await fetch(screenshotUrl)
 
     if (!imageResponse.ok) {
       throw new Error(`Failed to generate screenshot: ${imageResponse.statusText}`)
