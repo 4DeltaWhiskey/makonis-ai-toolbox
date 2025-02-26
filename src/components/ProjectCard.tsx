@@ -26,22 +26,6 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
     )
   );
 
-  console.log('Project permissions debug:', {
-    user: {
-      id: user?.id,
-      isLoggedIn: !!user,
-    },
-    project: {
-      id: project.id,
-      userId: project.userId,
-    },
-    permissions: {
-      isAdmin,
-      isOwner: user?.id === project.userId,
-      canEdit,
-    }
-  });
-
   return (
     <>
       <Card className="project-card overflow-hidden bg-white relative h-[420px] w-full flex flex-col">
