@@ -14,8 +14,15 @@ const Index = () => {
     const { data, error } = await supabase
       .from('projects')
       .select(`
-        *,
-        owner:profiles(email)
+        id,
+        title,
+        description,
+        website,
+        github,
+        thumbnail_url,
+        tags,
+        user_id,
+        profiles!projects_user_id_fkey (email)
       `)
       .order('created_at', { ascending: false });
 
@@ -39,8 +46,8 @@ const Index = () => {
       thumbnailUrl: project.thumbnail_url,
       tags: project.tags || [],
       userId: project.user_id,
-      owner: project.owner ? {
-        email: project.owner.email
+      owner: project.profiles ? {
+        email: project.profiles.email
       } : null
     }));
 
