@@ -57,17 +57,6 @@ export const ProjectActions = ({
             Video
           </Button>
         )}
-        {canEdit && (
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={onEdit}
-          >
-            <Edit className="h-4 w-4" />
-            Edit
-          </Button>
-        )}
       </div>
 
       <Dialog open={showVideo} onOpenChange={setShowVideo}>
