@@ -29,9 +29,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
+      if (session) {
+        setSession(session);
+        setUser(session.user);
         checkAdminStatus(session.user.id);
       }
     });
@@ -40,8 +40,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      console.log("Auth state changed:", _event, session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
+      
       if (session?.user) {
         checkAdminStatus(session.user.id);
       } else {
@@ -59,6 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
     
     if (error) {
+      console.error("Failed to check admin status:", error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -75,16 +78,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
-      // Clear local state
-      setSession(null);
-      setUser(null);
-      setIsAdmin(false);
-      
       toast({
         title: "Signed out successfully",
         description: "You have been signed out of your account",
       });
     } catch (error: any) {
+      console.error("Sign out error:", error);
       toast({
         variant: "destructive",
         title: "Error signing out",
