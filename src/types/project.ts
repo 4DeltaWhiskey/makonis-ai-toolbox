@@ -9,7 +9,4 @@ export interface Project {
   thumbnailUrl: string;
   tags: string[];
   userId?: string;
-  owner?: {
-    email: string | null;
-  } | null;
 }

@@ -7,7 +7,6 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ProjectActions } from "./projects/ProjectActions";
 import { EditProjectForm } from "./projects/EditProjectForm";
-import { UserCircle2 } from "lucide-react";
 
 interface ProjectCardProps {
   project: Project;
@@ -62,15 +61,7 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
               </Badge>
             ))}
           </div>
-          <div className="space-y-1">
-            <h3 className="font-semibold text-xl tracking-tight line-clamp-1">{project.title}</h3>
-            {project.owner?.email && (
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <UserCircle2 className="h-4 w-4" />
-                <span>{project.owner.email}</span>
-              </div>
-            )}
-          </div>
+          <h3 className="font-semibold text-xl tracking-tight line-clamp-1">{project.title}</h3>
         </CardHeader>
         <CardContent className="flex-1">
           <p className="text-muted-foreground line-clamp-3 h-[72px]">{project.description}</p>

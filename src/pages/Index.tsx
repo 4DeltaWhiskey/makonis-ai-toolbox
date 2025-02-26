@@ -13,16 +13,10 @@ const Index = () => {
   const fetchProjects = async () => {
     const { data, error } = await supabase
       .from('projects')
-      .select(`
-        *,
-        profiles!user_id (
-          email
-        )
-      `)
+      .select('*')
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Error fetching projects:', error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -31,9 +25,7 @@ const Index = () => {
       return;
     }
 
-    if (!data) return;
-
-    const formattedProjects: Project[] = data.map(project => ({
+    setProjects(data?.map(project => ({
       id: project.id,
       title: project.title,
       description: project.description,
@@ -41,14 +33,8 @@ const Index = () => {
       github: project.github || undefined,
       thumbnailUrl: project.thumbnail_url,
       tags: project.tags || [],
-      userId: project.user_id,
-      owner: project.profiles ? {
-        email: project.profiles.email
-      } : null
-    }));
-
-    setProjects(formattedProjects);
-    console.log('Fetched projects:', formattedProjects);
+      userId: project.user_id
+    })) || []);
   };
 
   useEffect(() => {
