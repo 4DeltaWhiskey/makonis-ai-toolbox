@@ -32,7 +32,8 @@ const Index = () => {
       website: project.website || undefined,
       github: project.github || undefined,
       thumbnailUrl: project.thumbnail_url,
-      tags: project.tags || []
+      tags: project.tags || [],
+      userId: project.user_id
     })) || []);
   };
 
@@ -44,7 +45,7 @@ const Index = () => {
     <div className="min-h-screen px-6 py-12 animate-slideIn">
       <div className="max-w-7xl mx-auto">
         <ProjectsHeader onProjectAdded={fetchProjects} />
-        <ProjectsGrid projects={projects} />
+        <ProjectsGrid projects={projects} onDelete={fetchProjects} />
       </div>
     </div>
   );
