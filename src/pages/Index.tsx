@@ -22,11 +22,14 @@ const Index = () => {
         thumbnail_url,
         tags,
         user_id,
-        profiles!projects_user_id_fkey (email)
+        profiles (
+          email
+        )
       `)
       .order('created_at', { ascending: false });
 
     if (error) {
+      console.error('Error fetching projects:', error);
       toast({
         variant: "destructive",
         title: "Error",
