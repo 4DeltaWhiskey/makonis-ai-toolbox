@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Trash, Upload } from "lucide-react";
 import type { Project } from "@/types/project";
 
@@ -21,6 +21,8 @@ export const EditProjectForm = ({ project, onSuccess, onCancel, onDelete }: Edit
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [videoFile, setVideoFile] = useState<File | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: project.title,
     description: project.description,
@@ -29,6 +31,12 @@ export const EditProjectForm = ({ project, onSuccess, onCancel, onDelete }: Edit
     tags: project.tags.join(", "),
     videoUrl: project.videoUrl || ""
   });
+
+  useEffect(() => {
+    if (formData.videoUrl) {
+      setVideoPreviewUrl(formData.videoUrl);
+    }
+  }, [formData.videoUrl]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -42,7 +50,9 @@ export const EditProjectForm = ({ project, onSuccess, onCancel, onDelete }: Edit
 
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setVideoFile(e.target.files[0]);
+      const file = e.target.files[0];
+      setVideoFile(file);
+      setVideoPreviewUrl(URL.createObjectURL(file));
     }
   };
 
@@ -174,16 +184,26 @@ export const EditProjectForm = ({ project, onSuccess, onCancel, onDelete }: Edit
                 type="button"
                 variant="outline"
                 size="icon"
-                onClick={() => setVideoFile(null)}
+                onClick={() => {
+                  setVideoFile(null);
+                  setVideoPreviewUrl(formData.videoUrl);
+                }}
               >
                 <Trash className="h-4 w-4" />
               </Button>
             )}
           </div>
-          {formData.videoUrl && !videoFile && (
-            <p className="text-sm text-muted-foreground">
-              Current video: {formData.videoUrl}
-            </p>
+          {videoPreviewUrl && (
+            <div className="mt-2">
+              <video
+                ref={videoRef}
+                src={videoPreviewUrl}
+                controls
+                className="w-full rounded-md max-h-[200px] object-contain bg-black"
+              >
+                Your browser does not support the video tag.
+              </video>
+            </div>
           )}
         </div>
 
