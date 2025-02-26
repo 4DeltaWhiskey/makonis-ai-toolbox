@@ -14,10 +14,20 @@ interface ProjectCardProps {
 export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
   const { user, isAdmin } = useAuth();
   
-  // Adding console.log to debug visibility conditions
-  console.log('Auth state:', { isAdmin, userId: user?.id, projectUserId: project.userId });
+  // Detailed logging for debugging auth state
+  console.log('Full auth state:', {
+    isAdmin,
+    userId: user?.id,
+    projectUserId: project.userId,
+    user: user,
+  });
+  
   const canEdit = isAdmin || user?.id === project.userId;
-  console.log('Can edit:', canEdit);
+  console.log('Can edit calculation:', {
+    isAdmin,
+    userMatch: user?.id === project.userId,
+    canEdit
+  });
 
   return (
     <Card className="project-card overflow-hidden bg-white relative">
