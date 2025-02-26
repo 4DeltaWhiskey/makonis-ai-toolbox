@@ -29,6 +29,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  const createUserProfile = async (userId: string, email: string) => {
+    try {
+      // First check if profile already exists
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (existingProfile) {
+        console.log('Profile already exists for user:', userId);
+        return;
+      }
+
+      // If no profile exists, create one
+      const { error: insertError } = await supabase
+        .from('profiles')
+        .insert([
+          {
+            id: userId,
+            email: email,
+          },
+        ]);
+
+      if (insertError) {
+        console.error('Error creating user profile:', insertError);
+        throw insertError;
+      }
+
+      console.log('Created new profile for user:', userId);
+    } catch (error) {
+      console.error('Error in createUserProfile:', error);
+      toast({
+        variant: "destructive",
+        title: "Error creating user profile",
+        description: "There was an error setting up your account. Please try again.",
+      });
+    }
+  };
+
   useEffect(() => {
     // Get initial session
     const initializeAuth = async () => {
@@ -38,6 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(initialSession?.user ?? null);
         
         if (initialSession?.user) {
+          await createUserProfile(initialSession.user.id, initialSession.user.email || '');
           checkAdminStatus(initialSession.user.id);
         }
       } catch (error) {
@@ -57,6 +98,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(currentSession?.user ?? null);
       
       if (currentSession?.user) {
+        // Create profile for new sign ups and social auth
+        if (event === 'SIGNED_IN') {
+          await createUserProfile(currentSession.user.id, currentSession.user.email || '');
+        }
         checkAdminStatus(currentSession.user.id);
       } else {
         setIsAdmin(false);
