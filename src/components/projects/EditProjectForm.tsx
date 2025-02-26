@@ -1,14 +1,14 @@
 
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useState, useRef, useEffect } from "react";
-import { Trash, Upload } from "lucide-react";
+import { useState } from "react";
+import { Trash } from "lucide-react";
 import type { Project } from "@/types/project";
+import { VideoUpload } from "./VideoUpload";
+import { ProjectFormFields } from "./ProjectFormFields";
+import { useVideoUpload } from "./hooks/useVideoUpload";
 
 interface EditProjectFormProps {
   project: Project;
@@ -20,9 +20,6 @@ interface EditProjectFormProps {
 export const EditProjectForm = ({ project, onSuccess, onCancel, onDelete }: EditProjectFormProps) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [videoFile, setVideoFile] = useState<File | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: project.title,
     description: project.description,
@@ -32,11 +29,13 @@ export const EditProjectForm = ({ project, onSuccess, onCancel, onDelete }: Edit
     videoUrl: project.videoUrl || ""
   });
 
-  useEffect(() => {
-    if (formData.videoUrl) {
-      setVideoPreviewUrl(formData.videoUrl);
-    }
-  }, [formData.videoUrl]);
+  const { 
+    videoFile,
+    videoPreviewUrl,
+    handleVideoChange,
+    handleVideoRemove,
+    uploadVideo 
+  } = useVideoUpload({ initialVideoUrl: formData.videoUrl });
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -46,33 +45,6 @@ export const EditProjectForm = ({ project, onSuccess, onCancel, onDelete }: Edit
       ...prev,
       [name]: value,
     }));
-  };
-
-  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setVideoFile(file);
-      setVideoPreviewUrl(URL.createObjectURL(file));
-    }
-  };
-
-  const uploadVideo = async () => {
-    if (!videoFile) return null;
-
-    const fileExt = videoFile.name.split('.').pop();
-    const filePath = `${crypto.randomUUID()}.${fileExt}`;
-    
-    const { error: uploadError } = await supabase.storage
-      .from('videos')
-      .upload(filePath, videoFile);
-
-    if (uploadError) throw uploadError;
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('videos')
-      .getPublicUrl(filePath);
-
-    return publicUrl;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -120,108 +92,19 @@ export const EditProjectForm = ({ project, onSuccess, onCancel, onDelete }: Edit
   return (
     <form onSubmit={handleSubmit}>
       <div className="grid gap-4 py-4">
-        <div className="grid gap-2">
-          <Label htmlFor="title">Project Title *</Label>
-          <Input
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleInputChange}
-            placeholder="Enter project title"
-            required
-          />
-        </div>
+        <ProjectFormFields 
+          formData={formData} 
+          onChange={handleInputChange} 
+        />
         
-        <div className="grid gap-2">
-          <Label htmlFor="description">Description *</Label>
-          <Textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            placeholder="Describe your project..."
-            required
-          />
-        </div>
-
-        <div className="grid gap-2">
-          <Label htmlFor="website">Website URL *</Label>
-          <Input
-            id="website"
-            name="website"
-            type="url"
-            value={formData.website}
-            onChange={handleInputChange}
-            placeholder="https://your-project.com"
-            required
-          />
-        </div>
-
-        <div className="grid gap-2">
-          <Label htmlFor="github">GitHub URL</Label>
-          <Input
-            id="github"
-            name="github"
-            type="url"
-            value={formData.github}
-            onChange={handleInputChange}
-            placeholder="https://github.com/username/repo"
-          />
-        </div>
-
-        <div className="grid gap-2">
-          <Label htmlFor="video">Project Video</Label>
-          <div className="flex gap-2 items-center">
-            <Input
-              id="video"
-              type="file"
-              accept="video/*"
-              onChange={handleVideoChange}
-              className="flex-1"
-            />
-            {videoFile && (
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={() => {
-                  setVideoFile(null);
-                  setVideoPreviewUrl(formData.videoUrl);
-                }}
-              >
-                <Trash className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-          {videoPreviewUrl && (
-            <div className="mt-2">
-              <video
-                ref={videoRef}
-                src={videoPreviewUrl}
-                controls
-                className="w-full rounded-md max-h-[200px] object-contain bg-black"
-              >
-                Your browser does not support the video tag.
-              </video>
-            </div>
-          )}
-        </div>
-
-        <div className="grid gap-2">
-          <Label htmlFor="tags">Tags *</Label>
-          <Input
-            id="tags"
-            name="tags"
-            value={formData.tags}
-            onChange={handleInputChange}
-            placeholder="AI, Machine Learning, Computer Vision"
-            required
-          />
-          <p className="text-sm text-muted-foreground">
-            Separate tags with commas
-          </p>
-        </div>
+        <VideoUpload
+          videoPreviewUrl={videoPreviewUrl}
+          onVideoChange={handleVideoChange}
+          onVideoRemove={handleVideoRemove}
+          videoFile={videoFile}
+        />
       </div>
+
       <DialogFooter className="flex justify-between space-x-2">
         <Button
           type="button"
