@@ -7,9 +7,10 @@ import type { Project } from "@/types/project";
 
 interface ProjectCardProps {
   project: Project;
+  onDelete: () => void;  // Adding the missing onDelete prop type
 }
 
-export const ProjectCard = ({ project }: ProjectCardProps) => {
+export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
   return (
     <Card className="project-card overflow-hidden bg-white">
       <div className="relative aspect-video overflow-hidden">
