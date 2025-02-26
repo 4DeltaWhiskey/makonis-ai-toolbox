@@ -72,7 +72,6 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
             github={project.github}
             canEdit={canEdit}
             onEdit={() => setShowEditDialog(true)}
-            onDelete={onDelete}
           />
         </CardFooter>
       </Card>
@@ -89,6 +88,10 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
               onDelete(); // Using onDelete as a refresh trigger
             }}
             onCancel={() => setShowEditDialog(false)}
+            onDelete={() => {
+              setShowEditDialog(false);
+              onDelete();
+            }}
           />
         </DialogContent>
       </Dialog>

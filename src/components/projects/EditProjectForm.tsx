@@ -7,15 +7,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
+import { Trash } from "lucide-react";
 import type { Project } from "@/types/project";
 
 interface EditProjectFormProps {
   project: Project;
   onSuccess: () => void;
   onCancel: () => void;
+  onDelete: () => void;
 }
 
-export const EditProjectForm = ({ project, onSuccess, onCancel }: EditProjectFormProps) => {
+export const EditProjectForm = ({ project, onSuccess, onCancel, onDelete }: EditProjectFormProps) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -138,7 +140,16 @@ export const EditProjectForm = ({ project, onSuccess, onCancel }: EditProjectFor
           </p>
         </div>
       </div>
-      <DialogFooter>
+      <DialogFooter className="flex justify-between space-x-2">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onDelete}
+          className="gap-2 text-destructive hover:text-destructive"
+        >
+          <Trash className="h-4 w-4" />
+          Delete
+        </Button>
         <Button type="submit" disabled={isLoading}>
           {isLoading ? "Saving..." : "Save Changes"}
         </Button>
