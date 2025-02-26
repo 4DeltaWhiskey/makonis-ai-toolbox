@@ -16,7 +16,6 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
   const location = useLocation();
 
   if (!session) {
-    // Redirect to /auth, but save the attempted location
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
@@ -28,7 +27,6 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   const location = useLocation();
 
   if (session) {
-    // Redirect to the page they came from, or to "/" if no previous location
     const from = (location.state as any)?.from?.pathname || "/";
     return <Navigate to={from} replace />;
   }
@@ -44,14 +42,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route
-              path="/"
-              element={
-                <PrivateRoute>
-                  <Index />
-                </PrivateRoute>
-              }
-            />
+            <Route path="/" element={<Index />} />
             <Route
               path="/auth"
               element={
