@@ -100,6 +100,33 @@ export const EditProjectForm = ({ project, onSuccess, onCancel, onDelete }: Edit
     }
   };
 
+  const handleDelete = async () => {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase
+        .from('projects')
+        .delete()
+        .eq('id', project.id);
+
+      if (error) throw new Error(error.message);
+
+      toast({
+        title: "Success",
+        description: "Project deleted successfully",
+      });
+
+      onDelete();
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="grid gap-4 py-4">
@@ -140,7 +167,7 @@ export const EditProjectForm = ({ project, onSuccess, onCancel, onDelete }: Edit
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                onClick={onDelete}
+                onClick={handleDelete}
               >
                 Delete
               </AlertDialogAction>
