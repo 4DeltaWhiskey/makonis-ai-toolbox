@@ -3,18 +3,37 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "@/components/auth/AuthProvider";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { AuthProvider, useAuth } from "@/components/auth/AuthProvider";
 import { AuthPage } from "@/components/auth/AuthPage";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import { useAuth } from "@/components/auth/AuthProvider";
 
 const queryClient = new QueryClient();
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { session } = useAuth();
-  return session ? <>{children}</> : <Navigate to="/auth" />;
+  const location = useLocation();
+
+  if (!session) {
+    // Redirect to /auth, but save the attempted location
+    return <Navigate to="/auth" state={{ from: location }} replace />;
+  }
+
+  return <>{children}</>;
+}
+
+function PublicRoute({ children }: { children: React.ReactNode }) {
+  const { session } = useAuth();
+  const location = useLocation();
+
+  if (session) {
+    // Redirect to the page they came from, or to "/" if no previous location
+    const from = (location.state as any)?.from?.pathname || "/";
+    return <Navigate to={from} replace />;
+  }
+
+  return <>{children}</>;
 }
 
 const App = () => (
@@ -33,7 +52,14 @@ const App = () => (
                 </PrivateRoute>
               }
             />
-            <Route path="/auth" element={<AuthPage />} />
+            <Route
+              path="/auth"
+              element={
+                <PublicRoute>
+                  <AuthPage />
+                </PublicRoute>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
