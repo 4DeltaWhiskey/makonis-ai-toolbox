@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { LayoutGrid } from "lucide-react";
 
 export function AuthPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { session } = useAuth();
   const { toast } = useToast();
   const [email, setEmail] = useState("");
@@ -19,7 +20,8 @@ export function AuthPage() {
 
   // Redirect if already logged in
   if (session) {
-    navigate("/");
+    const from = (location.state as any)?.from?.pathname || "/";
+    navigate(from, { replace: true });
     return null;
   }
 
@@ -35,7 +37,7 @@ export function AuthPage() {
 
       if (error) throw error;
 
-      navigate("/");
+      // No need to navigate here - the session change will trigger the redirect
     } catch (error: any) {
       toast({
         variant: "destructive",
