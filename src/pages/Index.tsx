@@ -15,7 +15,7 @@ const Index = () => {
       .from('projects')
       .select(`
         *,
-        profiles:user_id (
+        profiles!user_id (
           email
         )
       `)
