@@ -40,12 +40,23 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
           </Button>
         )}
         <div className="relative h-[210px] overflow-hidden">
-          <img
-            src={project.thumbnailUrl}
-            alt={project.title}
-            className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
-            loading="lazy"
-          />
+          {project.website ? (
+            <a href={project.website} target="_blank" rel="noopener noreferrer" className="block h-full">
+              <img
+                src={project.thumbnailUrl}
+                alt={project.title}
+                className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+                loading="lazy"
+              />
+            </a>
+          ) : (
+            <img
+              src={project.thumbnailUrl}
+              alt={project.title}
+              className="object-cover w-full h-full"
+              loading="lazy"
+            />
+          )}
         </div>
         <CardHeader className="space-y-2 flex-none py-3">
           <h3 className="font-semibold text-xl tracking-tight line-clamp-1">{project.title}</h3>
