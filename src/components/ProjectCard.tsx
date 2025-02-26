@@ -67,17 +67,19 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
         </CardHeader>
         <CardContent className="flex-1">
           <div>
-            <p className={`text-muted-foreground ${expandDescription ? '' : 'line-clamp-2'}`}>
-              {project.description}
-            </p>
-            {!expandDescription && project.description.length > 100 && (
-              <button
-                onClick={() => setExpandDescription(true)}
-                className="text-primary flex items-center gap-1 text-sm mt-1 hover:underline"
-              >
-                more <ChevronRight className="h-3 w-3" />
-              </button>
-            )}
+            <div className="relative">
+              <p className={`text-muted-foreground ${expandDescription ? '' : 'line-clamp-2'}`}>
+                {project.description}
+              </p>
+              {!expandDescription && project.description.length > 100 && (
+                <button
+                  onClick={() => setExpandDescription(true)}
+                  className="text-primary inline-flex items-center gap-1 text-sm absolute bottom-0 right-0 bg-white pl-1 hover:underline"
+                >
+                  more <ChevronRight className="h-3 w-3" />
+                </button>
+              )}
+            </div>
           </div>
         </CardContent>
         <CardFooter className="flex flex-row justify-between items-center p-6 pt-0 flex-none">
