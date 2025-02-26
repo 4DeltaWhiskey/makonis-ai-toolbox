@@ -25,11 +25,21 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
     )
   );
 
-  console.log('Edit permissions:', {
-    isAdmin,
-    userId: user?.id,
-    projectUserId: project.userId,
-    canEdit
+  // Detailed logging for debugging auth state and permissions
+  console.log('Project permissions debug:', {
+    user: {
+      id: user?.id,
+      isLoggedIn: !!user,
+    },
+    project: {
+      id: project.id,
+      userId: project.userId,
+    },
+    permissions: {
+      isAdmin,
+      isOwner: user?.id === project.userId,
+      canEdit,
+    }
   });
 
   const handleEdit = () => {
