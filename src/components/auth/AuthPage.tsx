@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { Windows } from "lucide-react";
+import { Microsoft } from "lucide-react";
 
 export function AuthPage() {
   const navigate = useNavigate();
@@ -107,7 +107,7 @@ export function AuthPage() {
               className="w-full flex items-center justify-center gap-2"
               onClick={handleAzureLogin}
             >
-              <Windows className="h-5 w-5" />
+              <Microsoft className="h-5 w-5" />
               Continue with Azure
             </Button>
           </div>
