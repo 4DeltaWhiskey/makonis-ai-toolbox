@@ -11,14 +11,18 @@ const Index = () => {
   const [projects, setProjects] = useState<Project[]>([]);
 
   const fetchProjects = async () => {
-    // First, let's check if we can fetch projects without the join
-    const { data: projectsData, error: projectsError } = await supabase
+    const { data, error } = await supabase
       .from('projects')
-      .select('*')
+      .select(`
+        *,
+        profiles:user_id (
+          email
+        )
+      `)
       .order('created_at', { ascending: false });
 
-    if (projectsError) {
-      console.error('Error fetching projects:', projectsError);
+    if (error) {
+      console.error('Error fetching projects:', error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -27,20 +31,9 @@ const Index = () => {
       return;
     }
 
-    // Now let's fetch profiles separately for debugging
-    const { data: profilesData, error: profilesError } = await supabase
-      .from('profiles')
-      .select('*');
+    if (!data) return;
 
-    if (profilesError) {
-      console.error('Error fetching profiles:', profilesError);
-    } else {
-      console.log('Profiles data:', profilesData);
-    }
-
-    if (!projectsData) return;
-
-    const formattedProjects: Project[] = projectsData.map(project => ({
+    const formattedProjects: Project[] = data.map(project => ({
       id: project.id,
       title: project.title,
       description: project.description,
@@ -49,14 +42,13 @@ const Index = () => {
       thumbnailUrl: project.thumbnail_url,
       tags: project.tags || [],
       userId: project.user_id,
-      owner: null // We'll handle this separately once we debug the issue
+      owner: project.profiles ? {
+        email: project.profiles.email
+      } : null
     }));
 
     setProjects(formattedProjects);
-    
-    // Log detailed information for debugging
-    console.log('Projects:', projectsData);
-    console.log('Formatted Projects:', formattedProjects);
+    console.log('Fetched projects:', formattedProjects);
   };
 
   useEffect(() => {
