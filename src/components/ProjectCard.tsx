@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ProjectActions } from "./projects/ProjectActions";
 import { EditProjectForm } from "./projects/EditProjectForm";
-import { ChevronRight, Edit } from "lucide-react";
+import { ChevronRight, Edit, User } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface ProjectCardProps {
@@ -48,7 +48,15 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
           />
         </div>
         <CardHeader className="space-y-2 flex-none py-3">
-          <h3 className="font-semibold text-xl tracking-tight line-clamp-1">{project.title}</h3>
+          <div className="flex justify-between items-start gap-2">
+            <h3 className="font-semibold text-xl tracking-tight line-clamp-1">{project.title}</h3>
+            {project.userEmail && (
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <User className="h-3 w-3" />
+                <span>{project.userEmail}</span>
+              </div>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="flex-1">
           <div>
@@ -82,6 +90,12 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
         <DialogContent className="sm:max-w-[525px]">
           <DialogHeader>
             <DialogTitle>Edit Project</DialogTitle>
+            {project.userEmail && (
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <User className="h-3 w-3" />
+                <span>Created by {project.userEmail}</span>
+              </div>
+            )}
           </DialogHeader>
           <EditProjectForm
             project={project}
