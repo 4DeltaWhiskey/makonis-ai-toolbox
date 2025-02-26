@@ -11,25 +11,14 @@ const Index = () => {
   const [projects, setProjects] = useState<Project[]>([]);
 
   const fetchProjects = async () => {
-    const { data, error } = await supabase
+    // First, let's check if we can fetch projects without the join
+    const { data: projectsData, error: projectsError } = await supabase
       .from('projects')
-      .select(`
-        id,
-        title,
-        description,
-        website,
-        github,
-        thumbnail_url,
-        tags,
-        user_id,
-        profiles (
-          email
-        )
-      `)
+      .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error('Error fetching projects:', error);
+    if (projectsError) {
+      console.error('Error fetching projects:', projectsError);
       toast({
         variant: "destructive",
         title: "Error",
@@ -38,9 +27,20 @@ const Index = () => {
       return;
     }
 
-    if (!data) return;
+    // Now let's fetch profiles separately for debugging
+    const { data: profilesData, error: profilesError } = await supabase
+      .from('profiles')
+      .select('*');
 
-    const formattedProjects: Project[] = data.map(project => ({
+    if (profilesError) {
+      console.error('Error fetching profiles:', profilesError);
+    } else {
+      console.log('Profiles data:', profilesData);
+    }
+
+    if (!projectsData) return;
+
+    const formattedProjects: Project[] = projectsData.map(project => ({
       id: project.id,
       title: project.title,
       description: project.description,
@@ -49,12 +49,14 @@ const Index = () => {
       thumbnailUrl: project.thumbnail_url,
       tags: project.tags || [],
       userId: project.user_id,
-      owner: project.profiles ? {
-        email: project.profiles.email
-      } : null
+      owner: null // We'll handle this separately once we debug the issue
     }));
 
     setProjects(formattedProjects);
+    
+    // Log detailed information for debugging
+    console.log('Projects:', projectsData);
+    console.log('Formatted Projects:', formattedProjects);
   };
 
   useEffect(() => {
