@@ -31,6 +31,7 @@ export type Database = {
         Row: {
           created_at: string
           description: string
+          development_hours: number | null
           github: string | null
           id: string
           thumbnail_url: string
@@ -42,6 +43,7 @@ export type Database = {
         Insert: {
           created_at?: string
           description: string
+          development_hours?: number | null
           github?: string | null
           id?: string
           thumbnail_url: string
@@ -53,6 +55,7 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string
+          development_hours?: number | null
           github?: string | null
           id?: string
           thumbnail_url?: string

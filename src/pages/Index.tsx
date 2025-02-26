@@ -21,6 +21,7 @@ const Index = () => {
         github,
         thumbnail_url,
         video_url,
+        development_hours,
         user_id,
         profiles (
           email
@@ -46,6 +47,7 @@ const Index = () => {
       github: project.github || undefined,
       thumbnailUrl: project.thumbnail_url,
       videoUrl: project.video_url || undefined,
+      developmentHours: project.development_hours || undefined,
       userId: project.user_id,
       userEmail: project.profiles?.email
     })) || []);
