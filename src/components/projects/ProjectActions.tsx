@@ -1,10 +1,11 @@
 
 import { Button } from "@/components/ui/button";
-import { GithubIcon, Globe, Edit } from "lucide-react";
+import { GithubIcon, Globe, Edit, Video } from "lucide-react";
 
 interface ProjectActionsProps {
   website?: string;
   github?: string;
+  videoUrl?: string;
   canEdit: boolean;
   onEdit: () => void;
 }
@@ -12,6 +13,7 @@ interface ProjectActionsProps {
 export const ProjectActions = ({
   website,
   github,
+  videoUrl,
   canEdit,
   onEdit,
 }: ProjectActionsProps) => {
@@ -37,6 +39,17 @@ export const ProjectActions = ({
         >
           <GithubIcon className="h-4 w-4" />
           GitHub
+        </Button>
+      )}
+      {videoUrl && (
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={() => window.open(videoUrl, '_blank')}
+        >
+          <Video className="h-4 w-4" />
+          Video
         </Button>
       )}
       {canEdit && (

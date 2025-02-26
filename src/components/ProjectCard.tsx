@@ -20,15 +20,13 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [expandDescription, setExpandDescription] = useState(false);
   
-  // Calculate if user can edit the project
   const canEdit = Boolean(
     user && (
-      isAdmin || // Admin can edit all projects
-      user.id === project.userId // User can edit their own projects
+      isAdmin || 
+      user.id === project.userId
     )
   );
 
-  // Detailed logging for debugging auth state and permissions
   console.log('Project permissions debug:', {
     user: {
       id: user?.id,
@@ -97,7 +95,8 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
           <ProjectActions
             website={project.website}
             github={project.github}
-            canEdit={false} // Set to false since we're now showing the edit button separately
+            videoUrl={project.videoUrl}
+            canEdit={false}
             onEdit={() => setShowEditDialog(true)}
           />
         </CardFooter>
@@ -112,7 +111,7 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
             project={project}
             onSuccess={() => {
               setShowEditDialog(false);
-              onDelete(); // Using onDelete as a refresh trigger
+              onDelete();
             }}
             onCancel={() => setShowEditDialog(false)}
             onDelete={() => {
