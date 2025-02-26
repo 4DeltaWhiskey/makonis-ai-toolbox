@@ -8,7 +8,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 
 interface ProjectCardProps {
   project: Project;
-  onDelete: () => void;  // Adding the missing onDelete prop type
+  onDelete: () => void;
 }
 
 export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
@@ -18,7 +18,7 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
   const canEdit = isAdmin || user?.id === project.userId;
 
   return (
-    <Card className="project-card overflow-hidden bg-white">
+    <Card className="project-card overflow-hidden bg-white relative">
       <div className="relative aspect-video overflow-hidden">
         <img
           src={project.thumbnailUrl}
@@ -40,8 +40,8 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
       <CardContent>
         <p className="text-muted-foreground line-clamp-2">{project.description}</p>
       </CardContent>
-      <CardFooter className="gap-2">
-        <div className="flex gap-2 flex-1">
+      <CardFooter className="flex justify-between items-center gap-2 z-10">
+        <div className="flex gap-2 flex-wrap flex-1">
           {project.website && (
             <Button
               variant="outline"
@@ -66,7 +66,7 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
           )}
         </div>
         {canEdit && (
-          <div className="flex gap-2">
+          <div className="flex gap-2 shrink-0">
             <Button
               variant="outline"
               size="sm"
