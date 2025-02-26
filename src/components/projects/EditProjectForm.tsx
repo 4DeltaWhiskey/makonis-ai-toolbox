@@ -25,7 +25,6 @@ export const EditProjectForm = ({ project, onSuccess, onCancel, onDelete }: Edit
     description: project.description,
     website: project.website || "",
     github: project.github || "",
-    tags: project.tags.join(", "),
     videoUrl: project.videoUrl || ""
   });
 
@@ -65,8 +64,7 @@ export const EditProjectForm = ({ project, onSuccess, onCancel, onDelete }: Edit
           description: formData.description,
           website: formData.website || null,
           github: formData.github || null,
-          video_url: videoUrl,
-          tags: formData.tags.split(",").map((tag) => tag.trim()).filter(Boolean)
+          video_url: videoUrl
         })
         .eq('id', project.id);
 

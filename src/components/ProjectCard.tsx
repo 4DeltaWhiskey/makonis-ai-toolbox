@@ -1,6 +1,5 @@
 
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import type { Project } from "@/types/project";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useState } from "react";
@@ -65,13 +64,6 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
           />
         </div>
         <CardHeader className="space-y-2 flex-none py-3">
-          <div className="flex flex-wrap gap-2">
-            {project.tags.map((tag) => (
-              <Badge key={tag} variant="secondary" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
           <h3 className="font-semibold text-xl tracking-tight line-clamp-1">{project.title}</h3>
         </CardHeader>
         <CardContent className="flex-1">

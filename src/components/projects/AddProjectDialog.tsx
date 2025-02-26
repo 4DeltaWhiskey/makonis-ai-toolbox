@@ -25,8 +25,7 @@ export function AddProjectDialog({ onProjectAdded }: AddProjectDialogProps) {
     description: "",
     website: "",
     github: "",
-    thumbnailUrl: "",
-    tags: "",
+    thumbnailUrl: ""
   });
 
   const handleInputChange = (
@@ -92,7 +91,6 @@ export function AddProjectDialog({ onProjectAdded }: AddProjectDialogProps) {
           github: formData.github || null,
           video_url: videoUrl,
           thumbnail_url: thumbnailData.thumbnailUrl,
-          tags: formData.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
           user_id: user?.id
         });
 
@@ -109,8 +107,7 @@ export function AddProjectDialog({ onProjectAdded }: AddProjectDialogProps) {
         description: "",
         website: "",
         github: "",
-        thumbnailUrl: "",
-        tags: "",
+        thumbnailUrl: ""
       });
       setVideoFile(null);
       
@@ -211,21 +208,6 @@ export function AddProjectDialog({ onProjectAdded }: AddProjectDialogProps) {
                   </Button>
                 )}
               </div>
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="tags">Tags *</Label>
-              <Input
-                id="tags"
-                name="tags"
-                value={formData.tags}
-                onChange={handleInputChange}
-                placeholder="AI, Machine Learning, Computer Vision"
-                required
-              />
-              <p className="text-sm text-muted-foreground">
-                Separate tags with commas
-              </p>
             </div>
           </div>
           <DialogFooter>

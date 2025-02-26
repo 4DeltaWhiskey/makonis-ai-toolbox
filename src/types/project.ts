@@ -7,7 +7,6 @@ export interface Project {
   github?: string;
   videoUrl?: string;
   thumbnailUrl: string;
-  tags: string[];
   userId?: string;
   userEmail?: string;
 }
