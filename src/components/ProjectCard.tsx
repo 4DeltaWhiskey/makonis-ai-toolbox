@@ -17,19 +17,18 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
   const { user, isAdmin } = useAuth();
   const [showEditDialog, setShowEditDialog] = useState(false);
   
-  // Detailed logging for debugging auth state
-  console.log('Full auth state:', {
+  // Calculate if user can edit the project
+  const canEdit = Boolean(
+    user && (
+      isAdmin || // Admin can edit all projects
+      user.id === project.userId // User can edit their own projects
+    )
+  );
+
+  console.log('Edit permissions:', {
     isAdmin,
     userId: user?.id,
     projectUserId: project.userId,
-    user: user,
-  });
-  
-  // Force canEdit to true for testing
-  const canEdit = true; // Temporarily allow editing for all users
-  console.log('Can edit calculation:', {
-    isAdmin,
-    userMatch: user?.id === project.userId,
     canEdit
   });
 
@@ -85,24 +84,28 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
                 GitHub
               </Button>
             )}
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={handleEdit}
-            >
-              <Edit className="h-4 w-4" />
-              Edit
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2 text-destructive hover:text-destructive"
-              onClick={onDelete}
-            >
-              <Trash className="h-4 w-4" />
-              Delete
-            </Button>
+            {canEdit && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={handleEdit}
+                >
+                  <Edit className="h-4 w-4" />
+                  Edit
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 text-destructive hover:text-destructive"
+                  onClick={onDelete}
+                >
+                  <Trash className="h-4 w-4" />
+                  Delete
+                </Button>
+              </>
+            )}
           </div>
         </CardFooter>
       </Card>
