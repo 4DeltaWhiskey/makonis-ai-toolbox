@@ -13,10 +13,14 @@ const Index = () => {
   const fetchProjects = async () => {
     const { data, error } = await supabase
       .from('projects')
-      .select('*')
+      .select(`
+        *,
+        profile:profiles(email)
+      `)
       .order('created_at', { ascending: false });
 
     if (error) {
+      console.error('Error fetching projects:', error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -33,7 +37,8 @@ const Index = () => {
       github: project.github || undefined,
       thumbnailUrl: project.thumbnail_url,
       tags: project.tags || [],
-      userId: project.user_id
+      userId: project.user_id,
+      userEmail: project.profile?.email
     })) || []);
   };
 
