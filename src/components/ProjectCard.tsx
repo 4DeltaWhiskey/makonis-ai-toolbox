@@ -96,7 +96,7 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
             website={project.website}
             github={project.github}
             videoUrl={project.videoUrl}
-            canEdit={false}
+            canEdit={canEdit}
             onEdit={() => setShowEditDialog(true)}
           />
         </CardFooter>
