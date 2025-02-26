@@ -15,7 +15,7 @@ const Index = () => {
       .from('projects')
       .select(`
         *,
-        profile:profiles(email)
+        profiles!projects_user_id_fkey(email)
       `)
       .order('created_at', { ascending: false });
 
@@ -38,7 +38,7 @@ const Index = () => {
       thumbnailUrl: project.thumbnail_url,
       tags: project.tags || [],
       userId: project.user_id,
-      userEmail: project.profile?.email
+      userEmail: project.profiles?.email
     })) || []);
   };
 
