@@ -7,7 +7,8 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ProjectActions } from "./projects/ProjectActions";
 import { EditProjectForm } from "./projects/EditProjectForm";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Edit } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface ProjectCardProps {
   project: Project;
@@ -47,6 +48,16 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
   return (
     <>
       <Card className="project-card overflow-hidden bg-white relative h-[420px] w-full flex flex-col">
+        {canEdit && (
+          <Button
+            variant="outline"
+            size="icon"
+            className="absolute top-2 right-2 z-10 bg-white/90 backdrop-blur-sm hover:bg-white"
+            onClick={() => setShowEditDialog(true)}
+          >
+            <Edit className="h-4 w-4" />
+          </Button>
+        )}
         <div className="relative h-[210px] overflow-hidden">
           <img
             src={project.thumbnailUrl}
@@ -86,7 +97,7 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
           <ProjectActions
             website={project.website}
             github={project.github}
-            canEdit={canEdit}
+            canEdit={false} // Set to false since we're now showing the edit button separately
             onEdit={() => setShowEditDialog(true)}
           />
         </CardFooter>
