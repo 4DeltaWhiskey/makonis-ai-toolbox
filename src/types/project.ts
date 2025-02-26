@@ -9,4 +9,5 @@ export interface Project {
   thumbnailUrl: string;
   userId?: string;
   userEmail?: string;
+  developmentHours?: number;
 }

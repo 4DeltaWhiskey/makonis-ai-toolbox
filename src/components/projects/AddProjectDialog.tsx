@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +24,8 @@ export function AddProjectDialog({ onProjectAdded }: AddProjectDialogProps) {
     description: "",
     website: "",
     github: "",
-    thumbnailUrl: ""
+    thumbnailUrl: "",
+    developmentHours: undefined as number | undefined
   });
 
   const handleInputChange = (
@@ -91,7 +91,8 @@ export function AddProjectDialog({ onProjectAdded }: AddProjectDialogProps) {
           github: formData.github || null,
           video_url: videoUrl,
           thumbnail_url: thumbnailData.thumbnailUrl,
-          user_id: user?.id
+          user_id: user?.id,
+          development_hours: formData.developmentHours || null
         });
 
       if (insertError) throw new Error(insertError.message);
@@ -107,7 +108,8 @@ export function AddProjectDialog({ onProjectAdded }: AddProjectDialogProps) {
         description: "",
         website: "",
         github: "",
-        thumbnailUrl: ""
+        thumbnailUrl: "",
+        developmentHours: undefined
       });
       setVideoFile(null);
       

@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ProjectActions } from "./projects/ProjectActions";
 import { EditProjectForm } from "./projects/EditProjectForm";
-import { ChevronRight, Edit, User } from "lucide-react";
+import { ChevronRight, Clock, Edit, User } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface ProjectCardProps {
@@ -60,6 +60,12 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
         </div>
         <CardHeader className="space-y-2 flex-none py-3">
           <h3 className="font-semibold text-xl tracking-tight line-clamp-1">{project.title}</h3>
+          {project.developmentHours && (
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+              <Clock className="h-3 w-3" />
+              <span>{project.developmentHours} hours</span>
+            </div>
+          )}
         </CardHeader>
         <CardContent className="flex-1">
           <div>

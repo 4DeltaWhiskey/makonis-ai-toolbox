@@ -36,7 +36,8 @@ export const EditProjectForm = ({ project, onSuccess, onCancel, onDelete }: Edit
     description: project.description,
     website: project.website || "",
     github: project.github || "",
-    videoUrl: project.videoUrl || ""
+    videoUrl: project.videoUrl || "",
+    developmentHours: project.developmentHours || undefined
   });
 
   const { 
@@ -75,7 +76,8 @@ export const EditProjectForm = ({ project, onSuccess, onCancel, onDelete }: Edit
           description: formData.description,
           website: formData.website || null,
           github: formData.github || null,
-          video_url: videoUrl
+          video_url: videoUrl,
+          development_hours: formData.developmentHours || null
         })
         .eq('id', project.id);
 
