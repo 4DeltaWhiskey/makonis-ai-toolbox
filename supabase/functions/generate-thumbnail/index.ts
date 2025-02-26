@@ -19,43 +19,52 @@ serve(async (req) => {
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY') ?? ''
+    const urlboxApiKey = Deno.env.get('URLBOX_API_KEY') ?? ''
+    const urlboxApiSecret = Deno.env.get('URLBOX_API_SECRET') ?? ''
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
-    // Generate image using DALL-E
-    const prompt = `Create a minimalist, professional thumbnail for a website with the URL ${website}. The image should be modern, clean, and suitable for a tech project showcase.`
-    
-    const dallEResponse = await fetch('https://api.openai.com/v1/images/generations', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: "dall-e-3",
-        prompt: prompt,
-        n: 1,
-        size: "1024x1024",
-      }),
-    })
-
-    if (!dallEResponse.ok) {
-      const error = await dallEResponse.json()
-      throw new Error(`DALL-E API error: ${error.error?.message || 'Unknown error'}`)
+    // Generate screenshot URL using URLbox
+    const format = 'png'
+    const options = {
+      url: website,
+      width: 1200,
+      height: 630,
+      format,
+      force: true,
+      full_page: false,
+      wait_for: 1000, // wait for 1s after page load
     }
 
-    const imageData = await dallEResponse.json()
-    const imageUrl = imageData.data[0].url
+    const queryString = new URLSearchParams({
+      url: options.url,
+      width: options.width.toString(),
+      height: options.height.toString(),
+      format: options.format,
+      force: options.force.toString(),
+      full_page: options.full_page.toString(),
+      wait_for: options.wait_for.toString(),
+    }).toString()
 
-    // Download the image from DALL-E
-    const imageResponse = await fetch(imageUrl)
+    const screenshotUrl = `https://api.urlbox.io/v1/${urlboxApiKey}/${btoa(queryString)}`
+
+    // Download the screenshot
+    const imageResponse = await fetch(screenshotUrl, {
+      headers: {
+        'Authorization': `Bearer ${urlboxApiSecret}`
+      }
+    })
+
+    if (!imageResponse.ok) {
+      throw new Error(`Failed to generate screenshot: ${imageResponse.statusText}`)
+    }
+
     const imageBlob = await imageResponse.blob()
 
     // Generate unique filename
     const filename = `${crypto.randomUUID()}.png`
     const filePath = `thumbnails/${filename}`
 
-    // Upload image to Supabase Storage
+    // Upload screenshot to Supabase Storage
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('project-thumbnails')
       .upload(filePath, imageBlob, {
