@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ProjectActions } from "./projects/ProjectActions";
 import { EditProjectForm } from "./projects/EditProjectForm";
+import { ChevronRight } from "lucide-react";
 
 interface ProjectCardProps {
   project: Project;
@@ -16,6 +17,7 @@ interface ProjectCardProps {
 export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
   const { user, isAdmin } = useAuth();
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [expandDescription, setExpandDescription] = useState(false);
   
   // Calculate if user can edit the project
   const canEdit = Boolean(
@@ -64,7 +66,19 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
           <h3 className="font-semibold text-xl tracking-tight line-clamp-1">{project.title}</h3>
         </CardHeader>
         <CardContent className="flex-1">
-          <p className="text-muted-foreground line-clamp-3">{project.description}</p>
+          <div>
+            <p className={`text-muted-foreground ${expandDescription ? '' : 'line-clamp-2'}`}>
+              {project.description}
+            </p>
+            {!expandDescription && project.description.length > 100 && (
+              <button
+                onClick={() => setExpandDescription(true)}
+                className="text-primary flex items-center gap-1 text-sm mt-1 hover:underline"
+              >
+                more <ChevronRight className="h-3 w-3" />
+              </button>
+            )}
+          </div>
         </CardContent>
         <CardFooter className="flex flex-row justify-between items-center p-6 pt-0 flex-none">
           <ProjectActions
