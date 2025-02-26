@@ -14,8 +14,10 @@ interface ProjectCardProps {
 export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
   const { user, isAdmin } = useAuth();
   
-  // Show edit controls if user is admin or if it's their own project
+  // Adding console.log to debug visibility conditions
+  console.log('Auth state:', { isAdmin, userId: user?.id, projectUserId: project.userId });
   const canEdit = isAdmin || user?.id === project.userId;
+  console.log('Can edit:', canEdit);
 
   return (
     <Card className="project-card overflow-hidden bg-white relative">
@@ -40,8 +42,8 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
       <CardContent>
         <p className="text-muted-foreground line-clamp-2">{project.description}</p>
       </CardContent>
-      <CardFooter className="flex justify-between items-center gap-2 z-20 bg-white relative">
-        <div className="flex gap-2 flex-wrap flex-1">
+      <CardFooter className="flex flex-row justify-between items-center p-6 pt-0">
+        <div className="flex gap-2 flex-wrap">
           {project.website && (
             <Button
               variant="outline"
@@ -66,11 +68,11 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
           )}
         </div>
         {canEdit && (
-          <div className="flex gap-2 shrink-0 relative z-30">
+          <div className="flex gap-2 ml-auto">
             <Button
               variant="outline"
               size="sm"
-              className="gap-2 bg-white"
+              className="gap-2"
             >
               <Edit className="h-4 w-4" />
               Edit
@@ -78,7 +80,7 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
             <Button
               variant="outline"
               size="sm"
-              className="gap-2 text-destructive hover:text-destructive bg-white"
+              className="gap-2 text-destructive hover:text-destructive"
               onClick={onDelete}
             >
               <Trash className="h-4 w-4" />
