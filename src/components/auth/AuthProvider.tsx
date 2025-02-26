@@ -60,14 +60,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         checkAdminStatus(currentSession.user.id);
       } else {
         setIsAdmin(false);
-        navigate('/auth');
       }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, []);
 
   const checkAdminStatus = async (userId: string) => {
     try {
@@ -96,9 +95,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(null);
       setUser(null);
       setIsAdmin(false);
-      
-      // Navigate to auth page
-      navigate('/auth');
       
       toast({
         title: "Signed out successfully",

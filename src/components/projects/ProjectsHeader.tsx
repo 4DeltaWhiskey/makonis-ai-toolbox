@@ -2,15 +2,17 @@
 import { AddProjectDialog } from "./AddProjectDialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LogOut } from "lucide-react";
+import { LogOut, LogIn } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 interface ProjectsHeaderProps {
   onProjectAdded: () => Promise<void>;
 }
 
 export function ProjectsHeader({ onProjectAdded }: ProjectsHeaderProps) {
-  const { signOut, isAdmin } = useAuth();
+  const { session, signOut, isAdmin } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <div className="flex justify-between items-center mb-12">
@@ -24,11 +26,20 @@ export function ProjectsHeader({ onProjectAdded }: ProjectsHeaderProps) {
         </p>
       </div>
       <div className="flex items-center gap-4">
-        <AddProjectDialog onProjectAdded={onProjectAdded} />
-        <Button variant="outline" onClick={signOut}>
-          <LogOut className="h-4 w-4 mr-2" />
-          Sign out
-        </Button>
+        {session ? (
+          <>
+            <AddProjectDialog onProjectAdded={onProjectAdded} />
+            <Button variant="outline" onClick={signOut}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign out
+            </Button>
+          </>
+        ) : (
+          <Button variant="outline" onClick={() => navigate('/auth')}>
+            <LogIn className="h-4 w-4 mr-2" />
+            Sign in
+          </Button>
+        )}
       </div>
     </div>
   );

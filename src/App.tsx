@@ -11,17 +11,6 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const { session } = useAuth();
-  const location = useLocation();
-
-  if (!session) {
-    return <Navigate to="/auth" state={{ from: location }} replace />;
-  }
-
-  return <>{children}</>;
-}
-
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { session } = useAuth();
   const location = useLocation();
@@ -37,14 +26,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route 
-        path="/" 
-        element={
-          <PrivateRoute>
-            <Index />
-          </PrivateRoute>
-        } 
-      />
+      <Route path="/" element={<Index />} />
       <Route
         path="/auth"
         element={
