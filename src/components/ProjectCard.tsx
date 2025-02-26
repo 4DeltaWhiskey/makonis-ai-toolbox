@@ -48,15 +48,7 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
           />
         </div>
         <CardHeader className="space-y-2 flex-none py-3">
-          <div className="flex justify-between items-start gap-2">
-            <h3 className="font-semibold text-xl tracking-tight line-clamp-1">{project.title}</h3>
-            {project.userEmail && (
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <User className="h-3 w-3" />
-                <span>{project.userEmail}</span>
-              </div>
-            )}
-          </div>
+          <h3 className="font-semibold text-xl tracking-tight line-clamp-1">{project.title}</h3>
         </CardHeader>
         <CardContent className="flex-1">
           <div>
@@ -75,14 +67,22 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex flex-row justify-between items-center p-6 pt-0 flex-none">
-          <ProjectActions
-            website={project.website}
-            github={project.github}
-            videoUrl={project.videoUrl}
-            canEdit={canEdit}
-            onEdit={() => setShowEditDialog(true)}
-          />
+        <CardFooter className="flex-none p-6 pt-0">
+          <div className="w-full flex flex-col gap-3">
+            <ProjectActions
+              website={project.website}
+              github={project.github}
+              videoUrl={project.videoUrl}
+              canEdit={canEdit}
+              onEdit={() => setShowEditDialog(true)}
+            />
+            {project.userEmail && (
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <User className="h-3 w-3" />
+                <span>Created by {project.userEmail}</span>
+              </div>
+            )}
+          </div>
         </CardFooter>
       </Card>
 
