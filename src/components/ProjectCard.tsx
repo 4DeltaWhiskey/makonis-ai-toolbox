@@ -45,7 +45,7 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
   return (
     <>
       <Card className="project-card overflow-hidden bg-white relative h-[420px] w-full flex flex-col">
-        <div className="relative h-48 overflow-hidden">
+        <div className="relative h-[160px] overflow-hidden">
           <img
             src={project.thumbnailUrl}
             alt={project.title}
@@ -53,7 +53,7 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
             loading="lazy"
           />
         </div>
-        <CardHeader className="space-y-2 flex-none">
+        <CardHeader className="space-y-2 flex-none py-4">
           <div className="flex flex-wrap gap-2">
             {project.tags.map((tag) => (
               <Badge key={tag} variant="secondary" className="text-xs">
@@ -64,7 +64,7 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
           <h3 className="font-semibold text-xl tracking-tight line-clamp-1">{project.title}</h3>
         </CardHeader>
         <CardContent className="flex-1">
-          <p className="text-muted-foreground line-clamp-3 h-[72px]">{project.description}</p>
+          <p className="text-muted-foreground line-clamp-3">{project.description}</p>
         </CardContent>
         <CardFooter className="flex flex-row justify-between items-center p-6 pt-0 flex-none">
           <ProjectActions
