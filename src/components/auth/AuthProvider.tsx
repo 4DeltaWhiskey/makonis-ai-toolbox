@@ -27,56 +27,83 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
 
   useEffect(() => {
+    let mounted = true;
+
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setSession(session);
-        setUser(session.user);
-        checkAdminStatus(session.user.id);
+    const initializeAuth = async () => {
+      try {
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
+        if (mounted) {
+          setSession(initialSession);
+          setUser(initialSession?.user ?? null);
+          if (initialSession?.user) {
+            checkAdminStatus(initialSession.user.id);
+          }
+        }
+      } catch (error) {
+        console.error("Error getting initial session:", error);
       }
-    });
+    };
+
+    initializeAuth();
 
     // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      console.log("Auth state changed:", _event, session?.user?.email);
-      setSession(session);
-      setUser(session?.user ?? null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+      console.log("Auth state changed:", event, currentSession?.user?.email);
       
-      if (session?.user) {
-        checkAdminStatus(session.user.id);
-      } else {
-        setIsAdmin(false);
+      if (mounted) {
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
+        
+        if (currentSession?.user) {
+          checkAdminStatus(currentSession.user.id);
+        } else {
+          setIsAdmin(false);
+        }
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const checkAdminStatus = async (userId: string) => {
-    const { data, error } = await supabase.rpc('has_role', {
-      user_id: userId,
-      role: 'admin'
-    });
-    
-    if (error) {
-      console.error("Failed to check admin status:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to check admin status",
+    try {
+      const { data, error } = await supabase.rpc('has_role', {
+        user_id: userId,
+        role: 'admin'
       });
-      return;
+      
+      if (error) {
+        console.error("Failed to check admin status:", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to check admin status",
+        });
+        return;
+      }
+      
+      setIsAdmin(data);
+    } catch (error) {
+      console.error("Error checking admin status:", error);
     }
-    
-    setIsAdmin(data);
   };
 
   const signOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+
+      // Force clear the state
+      setSession(null);
+      setUser(null);
+      setIsAdmin(false);
+      
+      // Reload the page to ensure clean state
+      window.location.reload();
       
       toast({
         title: "Signed out successfully",
