@@ -11,11 +11,12 @@ const Index = () => {
   const [projects, setProjects] = useState<Project[]>([]);
 
   const fetchProjects = async () => {
+    // Using simpler join syntax
     const { data, error } = await supabase
       .from('projects')
       .select(`
         *,
-        profiles:user_id (
+        profiles (
           email
         )
       `)
