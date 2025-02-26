@@ -8,4 +8,5 @@ export interface Project {
   videoUrl?: string;
   thumbnailUrl: string;
   tags: string[];
+  userId?: string;
 }

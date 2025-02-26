@@ -9,6 +9,24 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           created_at: string
@@ -18,6 +36,7 @@ export type Database = {
           tags: string[]
           thumbnail_url: string
           title: string
+          user_id: string | null
           video_url: string | null
           website: string | null
         }
@@ -29,6 +48,7 @@ export type Database = {
           tags?: string[]
           thumbnail_url: string
           title: string
+          user_id?: string | null
           video_url?: string | null
           website?: string | null
         }
@@ -40,8 +60,27 @@ export type Database = {
           tags?: string[]
           thumbnail_url?: string
           title?: string
+          user_id?: string | null
           video_url?: string | null
           website?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
         }
         Relationships: []
       }
@@ -50,10 +89,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          user_id: string
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never

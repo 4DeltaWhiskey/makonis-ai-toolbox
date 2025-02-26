@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { PlusIcon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/integrations/auth";
 
 interface AddProjectDialogProps {
   onProjectAdded: () => Promise<void>;
@@ -15,6 +15,7 @@ interface AddProjectDialogProps {
 
 export function AddProjectDialog({ onProjectAdded }: AddProjectDialogProps) {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -59,6 +60,7 @@ export function AddProjectDialog({ onProjectAdded }: AddProjectDialogProps) {
           github: formData.github || null,
           thumbnail_url: thumbnailData.thumbnailUrl,
           tags: formData.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
+          user_id: user?.id
         });
 
       if (insertError) throw new Error(insertError.message);
@@ -80,7 +82,7 @@ export function AddProjectDialog({ onProjectAdded }: AddProjectDialogProps) {
       
       // Refresh projects list
       await onProjectAdded();
-    } catch (error) {
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
