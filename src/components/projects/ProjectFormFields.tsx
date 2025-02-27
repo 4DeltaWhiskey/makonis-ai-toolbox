@@ -9,7 +9,7 @@ interface ProjectFormFieldsProps {
     description: string;
     website: string;
     github: string;
-    tags: string;
+    developmentHours?: number;
   };
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }
@@ -67,18 +67,17 @@ export const ProjectFormFields = ({ formData, onChange }: ProjectFormFieldsProps
       </div>
 
       <div className="grid gap-2">
-        <Label htmlFor="tags">Tags *</Label>
+        <Label htmlFor="developmentHours">Development Time (hours)</Label>
         <Input
-          id="tags"
-          name="tags"
-          value={formData.tags}
+          id="developmentHours"
+          name="developmentHours"
+          type="number"
+          min="0"
+          step="0.5"
+          value={formData.developmentHours || ""}
           onChange={onChange}
-          placeholder="AI, Machine Learning, Computer Vision"
-          required
+          placeholder="Enter development time in hours"
         />
-        <p className="text-sm text-muted-foreground">
-          Separate tags with commas
-        </p>
       </div>
     </>
   );

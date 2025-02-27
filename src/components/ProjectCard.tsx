@@ -1,13 +1,12 @@
 
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import type { Project } from "@/types/project";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ProjectActions } from "./projects/ProjectActions";
 import { EditProjectForm } from "./projects/EditProjectForm";
-import { ChevronRight, Edit } from "lucide-react";
+import { ChevronRight, Clock, Edit, User } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface ProjectCardProps {
@@ -27,22 +26,6 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
     )
   );
 
-  console.log('Project permissions debug:', {
-    user: {
-      id: user?.id,
-      isLoggedIn: !!user,
-    },
-    project: {
-      id: project.id,
-      userId: project.userId,
-    },
-    permissions: {
-      isAdmin,
-      isOwner: user?.id === project.userId,
-      canEdit,
-    }
-  });
-
   return (
     <>
       <Card className="project-card overflow-hidden bg-white relative h-[420px] w-full flex flex-col">
@@ -57,22 +40,32 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
           </Button>
         )}
         <div className="relative h-[210px] overflow-hidden">
-          <img
-            src={project.thumbnailUrl}
-            alt={project.title}
-            className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
-            loading="lazy"
-          />
+          {project.website ? (
+            <a href={project.website} target="_blank" rel="noopener noreferrer" className="block h-full">
+              <img
+                src={project.thumbnailUrl}
+                alt={project.title}
+                className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+                loading="lazy"
+              />
+            </a>
+          ) : (
+            <img
+              src={project.thumbnailUrl}
+              alt={project.title}
+              className="object-cover w-full h-full"
+              loading="lazy"
+            />
+          )}
         </div>
         <CardHeader className="space-y-2 flex-none py-3">
-          <div className="flex flex-wrap gap-2">
-            {project.tags.map((tag) => (
-              <Badge key={tag} variant="secondary" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
           <h3 className="font-semibold text-xl tracking-tight line-clamp-1">{project.title}</h3>
+          {project.developmentHours && (
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+              <Clock className="h-3 w-3" />
+              <span>{project.developmentHours} hours</span>
+            </div>
+          )}
         </CardHeader>
         <CardContent className="flex-1">
           <div>
@@ -91,14 +84,22 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex flex-row justify-between items-center p-6 pt-0 flex-none">
-          <ProjectActions
-            website={project.website}
-            github={project.github}
-            videoUrl={project.videoUrl}
-            canEdit={canEdit}
-            onEdit={() => setShowEditDialog(true)}
-          />
+        <CardFooter className="flex-none p-6 pt-0">
+          <div className="w-full flex flex-col gap-3">
+            <ProjectActions
+              website={project.website}
+              github={project.github}
+              videoUrl={project.videoUrl}
+              canEdit={canEdit}
+              onEdit={() => setShowEditDialog(true)}
+            />
+            {project.userEmail && (
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <User className="h-3 w-3" />
+                <span>Created by {project.userEmail}</span>
+              </div>
+            )}
+          </div>
         </CardFooter>
       </Card>
 
@@ -106,6 +107,12 @@ export const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
         <DialogContent className="sm:max-w-[525px]">
           <DialogHeader>
             <DialogTitle>Edit Project</DialogTitle>
+            {project.userEmail && (
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <User className="h-3 w-3" />
+                <span>Created by {project.userEmail}</span>
+              </div>
+            )}
           </DialogHeader>
           <EditProjectForm
             project={project}

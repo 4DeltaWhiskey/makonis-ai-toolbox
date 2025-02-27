@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { LayoutGrid } from "lucide-react";
+import { LayoutGrid, Github } from "lucide-react";
 
 export function AuthPage() {
   const navigate = useNavigate();
@@ -92,6 +92,22 @@ export function AuthPage() {
     }
   };
 
+  const handleGithubLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+      });
+
+      if (error) throw error;
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -111,6 +127,16 @@ export function AuthPage() {
             >
               <LayoutGrid className="h-5 w-5" />
               Continue with Azure
+            </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full flex items-center justify-center gap-2"
+              onClick={handleGithubLogin}
+            >
+              <Github className="h-5 w-5" />
+              Continue with GitHub
             </Button>
           </div>
 

@@ -9,6 +9,17 @@ import type { Project } from "@/types/project";
 import { VideoUpload } from "./VideoUpload";
 import { ProjectFormFields } from "./ProjectFormFields";
 import { useVideoUpload } from "./hooks/useVideoUpload";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface EditProjectFormProps {
   project: Project;
@@ -25,8 +36,8 @@ export const EditProjectForm = ({ project, onSuccess, onCancel, onDelete }: Edit
     description: project.description,
     website: project.website || "",
     github: project.github || "",
-    tags: project.tags.join(", "),
-    videoUrl: project.videoUrl || ""
+    videoUrl: project.videoUrl || "",
+    developmentHours: project.developmentHours || undefined
   });
 
   const { 
@@ -66,7 +77,7 @@ export const EditProjectForm = ({ project, onSuccess, onCancel, onDelete }: Edit
           website: formData.website || null,
           github: formData.github || null,
           video_url: videoUrl,
-          tags: formData.tags.split(",").map((tag) => tag.trim()).filter(Boolean)
+          development_hours: formData.developmentHours || null
         })
         .eq('id', project.id);
 
@@ -78,6 +89,33 @@ export const EditProjectForm = ({ project, onSuccess, onCancel, onDelete }: Edit
       });
 
       onSuccess();
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase
+        .from('projects')
+        .delete()
+        .eq('id', project.id);
+
+      if (error) throw new Error(error.message);
+
+      toast({
+        title: "Success",
+        description: "Project deleted successfully",
+      });
+
+      onDelete();
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -106,15 +144,36 @@ export const EditProjectForm = ({ project, onSuccess, onCancel, onDelete }: Edit
       </div>
 
       <DialogFooter className="flex justify-between space-x-2">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onDelete}
-          className="gap-2 text-destructive hover:text-destructive"
-        >
-          <Trash className="h-4 w-4" />
-          Delete
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="gap-2 text-destructive hover:text-destructive"
+            >
+              <Trash className="h-4 w-4" />
+              Delete
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete your project
+                and remove all of its data from our servers.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={handleDelete}
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
         <Button type="submit" disabled={isLoading}>
           {isLoading ? "Saving..." : "Save Changes"}
         </Button>

@@ -11,24 +11,11 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const { session } = useAuth();
-  const location = useLocation();
-
-  if (!session) {
-    // Redirect to /auth, but save the attempted location
-    return <Navigate to="/auth" state={{ from: location }} replace />;
-  }
-
-  return <>{children}</>;
-}
-
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { session } = useAuth();
   const location = useLocation();
 
   if (session) {
-    // Redirect to the page they came from, or to "/" if no previous location
     const from = (location.state as any)?.from?.pathname || "/";
     return <Navigate to={from} replace />;
   }
@@ -36,34 +23,33 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+const AppRoutes = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route
+        path="/auth"
+        element={
+          <PublicRoute>
+            <AuthPage />
+          </PublicRoute>
+        }
+      />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <PrivateRoute>
-                  <Index />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/auth"
-              element={
-                <PublicRoute>
-                  <AuthPage />
-                </PublicRoute>
-              }
-            />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <AppRoutes />
+        </AuthProvider>
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );

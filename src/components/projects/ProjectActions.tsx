@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
+import { GithubIcon, Edit, Video } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { GithubIcon, Globe, Edit, Video } from "lucide-react";
 import { useState } from "react";
 
 interface ProjectActionsProps {
@@ -13,28 +13,16 @@ interface ProjectActionsProps {
 }
 
 export const ProjectActions = ({
-  website,
   github,
   videoUrl,
   canEdit,
   onEdit,
 }: ProjectActionsProps) => {
-  const [showVideoDialog, setShowVideoDialog] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
 
   return (
     <>
       <div className="flex gap-2 flex-wrap">
-        {website && (
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={() => window.open(website, '_blank')}
-          >
-            <Globe className="h-4 w-4" />
-            Website
-          </Button>
-        )}
         {github && (
           <Button
             variant="outline"
@@ -51,32 +39,21 @@ export const ProjectActions = ({
             variant="outline"
             size="sm"
             className="gap-2"
-            onClick={() => setShowVideoDialog(true)}
+            onClick={() => setShowVideo(true)}
           >
             <Video className="h-4 w-4" />
             Video
           </Button>
         )}
-        {canEdit && (
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={onEdit}
-          >
-            <Edit className="h-4 w-4" />
-            Edit
-          </Button>
-        )}
       </div>
 
-      <Dialog open={showVideoDialog} onOpenChange={setShowVideoDialog}>
-        <DialogContent className="sm:max-w-[66%] sm:max-h-[66vh]">
+      <Dialog open={showVideo} onOpenChange={setShowVideo}>
+        <DialogContent className="sm:max-w-[800px]">
           <div className="aspect-video w-full">
-            <video
-              src={videoUrl}
-              controls
-              className="w-full h-full"
+            <video 
+              src={videoUrl} 
+              controls 
+              className="w-full h-full rounded-lg"
               autoPlay
             >
               Your browser does not support the video tag.

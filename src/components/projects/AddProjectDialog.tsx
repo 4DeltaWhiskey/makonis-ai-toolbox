@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +25,7 @@ export function AddProjectDialog({ onProjectAdded }: AddProjectDialogProps) {
     website: "",
     github: "",
     thumbnailUrl: "",
-    tags: "",
+    developmentHours: undefined as number | undefined
   });
 
   const handleInputChange = (
@@ -92,8 +91,8 @@ export function AddProjectDialog({ onProjectAdded }: AddProjectDialogProps) {
           github: formData.github || null,
           video_url: videoUrl,
           thumbnail_url: thumbnailData.thumbnailUrl,
-          tags: formData.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
-          user_id: user?.id
+          user_id: user?.id,
+          development_hours: formData.developmentHours || null
         });
 
       if (insertError) throw new Error(insertError.message);
@@ -110,7 +109,7 @@ export function AddProjectDialog({ onProjectAdded }: AddProjectDialogProps) {
         website: "",
         github: "",
         thumbnailUrl: "",
-        tags: "",
+        developmentHours: undefined
       });
       setVideoFile(null);
       
@@ -211,21 +210,6 @@ export function AddProjectDialog({ onProjectAdded }: AddProjectDialogProps) {
                   </Button>
                 )}
               </div>
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="tags">Tags *</Label>
-              <Input
-                id="tags"
-                name="tags"
-                value={formData.tags}
-                onChange={handleInputChange}
-                placeholder="AI, Machine Learning, Computer Vision"
-                required
-              />
-              <p className="text-sm text-muted-foreground">
-                Separate tags with commas
-              </p>
             </div>
           </div>
           <DialogFooter>
