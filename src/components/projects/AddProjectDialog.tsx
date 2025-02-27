@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,7 @@ import { PlusIcon, Trash } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { ProjectFormFields } from "./ProjectFormFields";
 
 interface AddProjectDialogProps {
   onProjectAdded: () => Promise<void>;
@@ -34,7 +36,7 @@ export function AddProjectDialog({ onProjectAdded }: AddProjectDialogProps) {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === 'developmentHours' ? (value ? parseFloat(value) : undefined) : value,
     }));
   };
 
@@ -140,54 +142,10 @@ export function AddProjectDialog({ onProjectAdded }: AddProjectDialogProps) {
             <DialogTitle>Add New Project</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="title">Project Title *</Label>
-              <Input
-                id="title"
-                name="title"
-                value={formData.title}
-                onChange={handleInputChange}
-                placeholder="Enter project title"
-                required
-              />
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="description">Description *</Label>
-              <Textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="Describe your project..."
-                required
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="website">Website URL *</Label>
-              <Input
-                id="website"
-                name="website"
-                type="url"
-                value={formData.website}
-                onChange={handleInputChange}
-                placeholder="https://your-project.com"
-                required
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="github">GitHub URL</Label>
-              <Input
-                id="github"
-                name="github"
-                type="url"
-                value={formData.github}
-                onChange={handleInputChange}
-                placeholder="https://github.com/username/repo"
-              />
-            </div>
+            <ProjectFormFields 
+              formData={formData} 
+              onChange={handleInputChange} 
+            />
 
             <div className="grid gap-2">
               <Label htmlFor="video">Project Video</Label>
